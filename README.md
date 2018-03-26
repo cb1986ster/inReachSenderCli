@@ -1,8 +1,15 @@
 HowTO Use:
 ----------
 
+0. Install in system
 1. Build "phone book"
 2. Send message
+
+HowTO Install in system:
+------------------------
+Easy way is to just do:
+> $ sudo install inreach* /usr/local/bin
+
 
 HowTO build phone book:
 -----------------------
@@ -28,7 +35,7 @@ or
 
 > Got yyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyy
 
-> Saved lr => yyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyy
+> Saved name => yyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyy
 
 Now you read to easy sending message.
 
