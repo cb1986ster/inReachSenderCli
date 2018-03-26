@@ -13,15 +13,21 @@ https://inreach.garmin.com/textmessage/txtmsg?extId=xxxxxxxx-xxxx-xxxx-xxxx-xxxx
 So if you have it, go to terminal and do :
 
 > $ inreach-link-to-guid "https://inreach.garmin.com/textmessage/txtmsg?extId=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx&adr=cb1986ster%40gmail.com"
+
 > Looking for GUID for link...
+
 > yyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyy
+
 > $ inreach-pd name yyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyy
 
 or
 
 > $ inreach-pb-from-link name "https://inreach.garmin.com/textmessage/txtmsg?extId=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx&adr=cb1986ster%40gmail.com"
+
 > Looking for GUID for link...
+
 > Got yyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyy
+
 > Saved lr => yyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyy
 
 Now you read to easy sending message.
