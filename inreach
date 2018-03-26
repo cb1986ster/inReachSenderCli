@@ -1,0 +1,103 @@
+#!/usr/bin/python
+'''
+Skrypt do wysylania wiadomosc na urzadzenia inReach
+
+by Bartosz Celmer <bart.celmer@gmail.com>
+'''
+
+import requests
+import sys
+import os
+import cPickle
+
+def sendInReachMessage(dane):
+    isOk = False
+    err = None
+    resp = None
+    try:
+        resp = requests.post('https://inreach.garmin.com/TextMessage/TxtMsg',data=dane)
+        if resp.json()['Success'] == True:
+            isOk = True
+    except Exception as e:
+        err = e
+    return isOk,err,resp
+
+def splitUpToN(text,n=150):
+    text = text.replace(', ',',').replace(' ,',',')
+    s = text.split(' ')
+    parts = []
+    out = ''
+    for w in s:
+        if len(out) + len(w) > n:
+            parts.append(out.strip())
+            out = ''
+        out = out + ' ' + w
+    parts.append(out.strip())
+    return [e for e in parts if len(e) > 0]
+
+def sendMessage(addressTo,message,addressFrom='it@arctowski.pl',maxTry=100,splitOn=158,splitTo=150):
+    dane = {}
+
+    homeDir = os.environ['HOME']
+    adrToGuid = {}
+
+    try:
+        f = open('%s/.inreach.pb.cPickle'%homeDir,'r')
+        adrToGuid = cPickle.load(f)
+        f.close()
+    except Exception as e:
+        pass
+
+    if addressTo.lower() in adrToGuid.keys():
+        dane['Guid'] = adrToGuid[addressTo.lower()]
+    else:
+        dane['Guid'] = addressTo
+    dane['ReplyAddress'] = addressFrom
+    dane['ReplyMessage'] = ''
+    if len(message) > splitOn:
+        msgs = splitUpToN(message,n=splitTo)
+
+        allMsgs = len(msgs)
+        print 'Long massage to %s splited in %d messages'%(addressTo,allMsgs)
+        for (i,m) in enumerate(msgs):
+            msgs[i] = '[%2d/%2d] %s'%(i+1,allMsgs,m)
+            print msgs[i]
+
+        print '---------------------------------------------------------------------'
+        for (i,m) in enumerate(msgs):
+            print 'Sending %d message: '%(i+1),
+            sys.stdout.flush()
+            for i in range(maxTry):
+                dane['ReplyMessage'] = m
+                (status,e,r) = sendInReachMessage(dane)
+                if status:
+                    print 'OK'
+                    sys.stdout.flush()
+                    break
+                else:
+                    print 'ER, ',
+                    sys.stdout.flush()
+                if i==maxTry-1:
+                    print 'Giving up, sorry'
+    else:
+        print 'Short message to %s.\n%s\nSending: '%(addressTo,message),
+        sys.stdout.flush()
+        for i in range(maxTry):
+            dane['ReplyMessage'] = message
+            (status,e,r) = sendInReachMessage(dane)
+            if status:
+                print 'OK'
+                sys.stdout.flush()
+                break
+            else:
+                print 'ER, ',
+                sys.stdout.flush()
+            if i==maxTry-1:
+                print 'Giving up, sorry'
+
+try:
+    ardTo = raw_input('To:  ')
+    msg   = raw_input('Msg: ')
+    sendMessage(ardTo,msg)
+except KeyboardInterrupt as e:
+    print '\n\nExiting.'

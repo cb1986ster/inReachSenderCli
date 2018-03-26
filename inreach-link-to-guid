@@ -1,0 +1,24 @@
+#!/usr/bin/python
+'''
+Skrypt do odszukiwania GUID do wysylania wiadomosc na urzadzenia inReach
+
+by Bartosz Celmer <bart.celmer@gmail.com>
+'''
+import requests
+import BeautifulSoup
+import sys
+
+def getGuidFromMessageReplayLink(link):
+    while 1:
+        try:
+            r = requests.get(link)
+            bs =  BeautifulSoup.BeautifulSoup(r.text)
+            for i in bs.findAll('input'):
+                if i['name'] == 'Guid':
+                    return i['value']
+            return None
+        except Exception as e:
+            print e, '\n\nRetrying...'
+
+print 'Looking for GUID for link...'
+print getGuidFromMessageReplayLink(sys.argv[-1])

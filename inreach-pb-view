@@ -1,0 +1,23 @@
+#!/usr/bin/python
+'''
+Skrypt do zarzadzania ksiazka inReach
+
+by Bartosz Celmer <bart.celmer@gmail.com>
+'''
+
+import cPickle
+import sys
+import os
+
+homeDir = os.environ['HOME']
+pb = {}
+
+try:
+    f = open('%s/.inreach.pb.cPickle'%homeDir,'r')
+    pb = cPickle.load(f)
+    f.close()
+except Exception as e:
+    pass
+
+for k in pb.keys():
+    print k,pb[k]

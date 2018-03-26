@@ -1,0 +1,46 @@
+#!/usr/bin/python
+'''
+Skrypt do odszukiwania GUID do wysylania wiadomosc na urzadzenia inReach
+
+by Bartosz Celmer <bart.celmer@gmail.com>
+'''
+import requests
+import BeautifulSoup
+import sys
+import cPickle
+import os
+
+def getGuidFromMessageReplayLink(link):
+    while 1:
+        try:
+            r = requests.get(link)
+            bs =  BeautifulSoup.BeautifulSoup(r.text)
+            for i in bs.findAll('input'):
+                if i['name'] == 'Guid':
+                    return i['value']
+            return None
+        except Exception as e:
+            print e, '\n\nRetrying...'
+
+print 'Looking for GUID for link...'
+guid = getGuidFromMessageReplayLink(sys.argv[-1])
+name = sys.argv[-2]
+print 'Got',guid
+
+homeDir = os.environ['HOME']
+pb = {}
+
+try:
+    f = open('%s/.inreach.pb.cPickle'%homeDir,'r')
+    pb = cPickle.load(f)
+    f.close()
+except Exception as e:
+    pass
+
+pb[name] = guid
+
+f = open('%s/.inreach.pb.cPickle'%homeDir,'w')
+pb = cPickle.dump(pb,f)
+f.close()
+
+print 'Saved %s => %s'%(name,guid)
